@@ -2,17 +2,25 @@ import React from 'react';
 import { ArrowRight, Star, Shield, Zap, Users, Smartphone, Globe, Code2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import TrayControls from '@/components/TrayControls';
 
 const Home = () => {
   return (
     <div className="min-h-screen">
+      {/* 托盘控制区域 */}
+      <div className="bg-gray-100 border-b">
+        <div className="max-w-7xl mx-auto">
+          <TrayControls />
+        </div>
+      </div>
+      
       <section className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
           <div className="max-w-7xl mx-auto">
             <div className="text-center">
               <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-6 leading-tight">
-                创新科技
+                创新科技dsa
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">
                   改变世界
                 </span>

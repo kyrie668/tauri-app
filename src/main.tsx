@@ -106,6 +106,7 @@ export default class ErrorBoundary extends React.Component<Props, MyComponentSta
   }
 }
 
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
