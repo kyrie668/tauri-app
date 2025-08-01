@@ -1,7 +1,10 @@
+use tauri::{Manager, Runtime};
+
+// 只在桌面端导入托盘相关模块
+#[cfg(desktop)]
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, TrayIconBuilder, TrayIconEvent},
-    Manager, Runtime,
 };
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -10,6 +13,8 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+// 只在桌面端编译托盘功能
+#[cfg(desktop)]
 fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
     let show_i = MenuItem::with_id(app, "show", "显示", true, None::<&str>)?;
     let hide_i = MenuItem::with_id(app, "hide", "隐藏", true, None::<&str>)?;
@@ -82,22 +87,26 @@ fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_os::init())
         .invoke_handler(tauri::generate_handler![greet])
         .setup(|app| {
-            // 创建系统托盘
-            create_tray(app.handle())?;
-            
-            // 设置窗口关闭行为为隐藏而不是退出
-            if let Some(window) = app.get_webview_window("main") {
-                let window_clone = window.clone();
-                window.on_window_event(move |event| {
-                    if let tauri::WindowEvent::CloseRequested { api, .. } = event {
-                        // 阻止默认关闭行为
-                        api.prevent_close();
-                        // 隐藏窗口到托盘
-                        let _ = window_clone.hide();
-                    }
-                });
+            // 只在桌面端创建系统托盘
+            #[cfg(desktop)]
+            {
+                create_tray(app.handle())?;
+                
+                // 设置窗口关闭行为为隐藏而不是退出（仅桌面端）
+                if let Some(window) = app.get_webview_window("main") {
+                    let window_clone = window.clone();
+                    window.on_window_event(move |event| {
+                        if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                            // 阻止默认关闭行为
+                            api.prevent_close();
+                            // 隐藏窗口到托盘
+                            let _ = window_clone.hide();
+                        }
+                    });
+                }
             }
             
             Ok(())
